@@ -1,6 +1,8 @@
 # x-xcursor-thumbnailer
 Two files for previewing Linux cursors in file manager.
 
+![](screenshot.png)
+
 Now it uses GD gawk library, if you can install packages from Arch User Repository, you can get easy installation of it. Later the ImageMagic will be an only dependency.
 
 Installation:
