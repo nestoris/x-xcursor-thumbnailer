@@ -1,0 +1,66 @@
+#!/usr/bin/gawk -f
+@load "gd"
+#@load "readdir"
+
+BEGIN{
+if(!ARGV[1]){help();exit}
+f_in=ARGV[1]
+f_out=ARGV[2]
+f_size=ARGV[3]
+main()
+}
+
+function help(){}
+
+function convert(f_in, f_out, f_size	,IMG_X,IMG_Y,max,cf,cmd){
+IMG_DST=gdImageCreateFromFile(f_in)
+IMG_X=gdImageSX(IMG_DST)
+IMG_Y=gdImageSY(IMG_DST)
+max = (IMG_X > IMG_Y) ? IMG_X : IMG_Y
+cf=f_size/max
+newWidth=int(IMG_X*cf+.5)
+newHeight=int(IMG_Y*cf+.5)
+#print f_in": "IMG_X"x"IMG_Y " ("max") "newWidth"x"newHeight #округление до ближайшего целого
+#print f_out
+#newImg=gdImageCreateTrueColor(newHeight,newHeight)
+#gdImageCopyResampled(newImg, IMG_DST, 0, 0, 0, 0, newWidth, newHeight, IMG_X, IMG_Y)
+if(f_out){
+cmd="convert " f_in " -scale " newWidth "x" newHeight " " f_out
+system(cmd)
+close(cmd)
+#gdImagePngName(newImg, f_out)
+#gdImagePngName(IMG_DST, f_out)
+}
+gdImageDestroy(IMG_DST)
+}
+
+function main(	cmd,frames){
+#tmpdir="/tmp/xcur/"
+#cmd="rm -rf "tmpdir"/*";system(cmd);close(cmd)
+#system("convert 'psd:"f_in"[0]' -scale \""f_size"x"f_size"\" png:"f_out)
+if(!tmpdir){"mktemp -d"|getline tmpdir}
+listfile=tmpdir"/list.txt"
+close("mktemp -d")
+cmd="xcur2png -q -c "listfile" -d "tmpdir" "f_in" 1> /dev/null 2> /dev/null > /dev/null"
+system(cmd)
+close(cmd)
+while((getline<listfile)>0){
+if($0!~"^#"){
+#print $4
+match($4,/^(.*\/)(.*)$/,a)
+outsize=f_size?f_size:64
+f_out=f_out?f_out:outsize"_"a[2]
+convert($4,f_out,outsize)
+break
+#++frames
+}
+}
+
+#print frames
+#fs=FS
+#FS="/"
+#while((getline<tmpdir)>0){print $2}
+#FS=fs
+#print f_out, f_size
+#cmd="rm -rf "tmpdir;system(cmd);close(cmd)
+}

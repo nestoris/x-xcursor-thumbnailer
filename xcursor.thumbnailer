@@ -1,0 +1,4 @@
+[Thumbnailer Entry]
+TryExec=/usr/lib/xmcthumbnailer
+Exec=/usr/lib/xmcthumbnailer %i %o %s
+MimeType=image/x-xcursor;
